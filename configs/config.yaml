@@ -1,0 +1,143 @@
+# ============================================================
+# Brain Tumor MRI Classification — Project Configuration
+# ============================================================
+# This file contains DEFAULT / INITIAL configuration values.
+# These are starting points and will be refined during each
+# experiment phase. They do NOT represent final tuned values.
+# ============================================================
+
+# ----------------------------
+# Dataset Configuration
+# ----------------------------
+dataset:
+  name: "brain-tumor-mri-dataset"
+  source: "kaggle:masoudnickparvar/brain-tumor-mri-dataset"
+  classes:
+    - glioma
+    - meningioma
+    - notumor
+    - pituitary
+  num_classes: 4
+
+  # Local paths (relative to project root)
+  raw_path: "data/raw"
+  processed_path: "data/processed"
+
+  # Split directories (inside raw_path)
+  train_dir: "Training"
+  test_dir: "Testing"
+
+  # Verified statistics (from Phase 1 dataset analysis)
+  total_images: 7200
+  train_images: 5600
+  test_images: 1600
+  images_per_class_train: 1400
+  images_per_class_test: 400
+
+  # Validation split from training set (future use)
+  validation_split: 0.15   # 15% of training set → ~840 images
+
+# ----------------------------
+# Preprocessing Configuration
+# ----------------------------
+preprocessing:
+  image_size: [224, 224]   # Standard input size for ImageNet pretrained models
+  channels: 3              # RGB
+  normalization:
+    mean: [0.485, 0.456, 0.406]   # ImageNet mean (initial default)
+    std: [0.229, 0.224, 0.225]    # ImageNet std (initial default)
+
+  # Data Augmentation (future Phase 2)
+  augmentation:
+    enabled: false        # Not enabled until Phase 2
+    horizontal_flip: true
+    vertical_flip: false
+    rotation_range: 15    # degrees
+    zoom_range: 0.1
+    brightness_range: [0.9, 1.1]
+    width_shift_range: 0.1
+    height_shift_range: 0.1
+
+# ----------------------------
+# Training Configuration
+# ----------------------------
+training:
+  batch_size: 32
+  epochs: 50              # Initial default; will be tuned per experiment
+  learning_rate: 0.0001   # Initial default for fine-tuning
+  optimizer: "adam"
+  weight_decay: 0.0001
+  early_stopping_patience: 10
+  reduce_lr_patience: 5
+  reduce_lr_factor: 0.5
+  seed: 42
+
+# ----------------------------
+# Model Configuration
+# ----------------------------
+model:
+  num_classes: 4
+  dropout_rate: 0.5       # Standard dropout rate
+  pretrained: true        # Use ImageNet pretrained weights
+
+  # Baseline architectures (future Phase 3)
+  baselines:
+    - vgg16
+    - resnet50
+    - efficientnetb3
+
+  # Proposed architecture (future Phase 4)
+  proposed:
+    backbone_1: "efficientnetb3"
+    backbone_2: "resnet50"
+    fusion: "concatenation"   # Feature fusion strategy
+
+  # CBAM Attention (future Phase 5)
+  attention:
+    enabled: false        # Not enabled until Phase 5
+    reduction_ratio: 16   # Channel attention reduction ratio
+    kernel_size: 7        # Spatial attention kernel size
+
+# ----------------------------
+# Uncertainty Estimation (future Phase 8)
+# ----------------------------
+uncertainty:
+  mc_dropout_enabled: false   # Not enabled until Phase 8
+  mc_dropout_passes: 50       # Number of stochastic forward passes
+  epistemic_threshold: 0.1    # Uncertainty threshold for flagging predictions
+
+# ----------------------------
+# Calibration (future Phase 9)
+# ----------------------------
+calibration:
+  temperature_scaling_enabled: false   # Not enabled until Phase 9
+  initial_temperature: 1.0
+  calibration_metric: "ece"            # Expected Calibration Error
+
+# ----------------------------
+# Explainability (future Phase 10)
+# ----------------------------
+explainability:
+  gradcam_enabled: false         # Not enabled until Phase 10
+  shap_enabled: false            # Not enabled until Phase 10
+  shap_background_samples: 100   # Background samples for SHAP
+  gradcam_layer: "auto"          # Target layer (auto-detect last conv layer)
+
+# ----------------------------
+# Output Paths
+# ----------------------------
+outputs:
+  figures: "outputs/figures"
+  metrics: "outputs/metrics"
+  predictions: "outputs/predictions"
+  checkpoints: "outputs/checkpoints"
+  explanations: "outputs/explanations"
+  reports: "reports"
+
+# ----------------------------
+# Experiment Tracking (future)
+# ----------------------------
+tracking:
+  enabled: false
+  backend: "wandb"   # Options: wandb, mlflow, tensorboard, none
+  log_interval: 10   # Log every N batches
